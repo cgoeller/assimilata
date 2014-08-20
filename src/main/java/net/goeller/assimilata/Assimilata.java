@@ -11,6 +11,7 @@ public class Assimilata {
 		Path targetDir = FileSystems.getDefault().getPath("m:/Photos");
 		
 		SynchSet set = new SynchSet(sourceDir, targetDir);
+		set.ignore("Thumbs.db");
 
 		// do some action
 		new Syncher().synch(set);

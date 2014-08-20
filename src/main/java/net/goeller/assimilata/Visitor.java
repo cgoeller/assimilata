@@ -34,7 +34,7 @@ public class Visitor extends SimpleFileVisitor<Path> {
 		//log.info("Entered directory: " + dir + "  target is : " + currentTargetPath);
 		
 		if (!Files.isDirectory(currentTargetPath)) {
-			System.out.println("not found: " + currentTargetPath);
+			System.out.println("target dir not found: " + currentTargetPath);
 		}
 		
 		return FileVisitResult.CONTINUE;
@@ -51,6 +51,17 @@ public class Visitor extends SimpleFileVisitor<Path> {
 
 	@Override
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+		if (synchSet.getIgnoreList().contains(file.getFileName().toString())) {
+			return FileVisitResult.CONTINUE;
+		}
+		
+		Path targetFile = currentTargetPath.resolve(file.getFileName());
+		
+		
+		if (!Files.isRegularFile(targetFile)) {
+			System.out.println("target file not found: " + targetFile);
+		}
 		
 		//log.info("Found file: " + file);
 		return FileVisitResult.CONTINUE;
