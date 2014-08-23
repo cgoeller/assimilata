@@ -1,5 +1,7 @@
 package net.goeller.assimilata;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -11,9 +13,11 @@ public class SourceRunDelegate implements FileVisitorDelegate {
 	private final Logger log = LoggerFactory.getLogger(SourceRunDelegate.class);
 
 	private final SynchSet synchSet;
+	private final Stats stats;
 
-	public SourceRunDelegate(SynchSet synchSet) {
+	public SourceRunDelegate(SynchSet synchSet, Stats stats) {
 		this.synchSet = synchSet;
+		this.stats = stats;
 	}
 
 	@Override
@@ -32,15 +36,21 @@ public class SourceRunDelegate implements FileVisitorDelegate {
 	}
 
 	@Override
-	public void missingTargetDir(Path sourceDir, Path targetDir) {
+	public void missingTargetDirEntered(Path sourceDir, Path targetDir) throws IOException {
 		log.info("Creating directory " + targetDir);
-
+		if (!synchSet.isDryRun()) {
+			Files.createDirectory(targetDir);
+		}
+		stats.copiedDir();
 	}
 
 	@Override
-	public void missingTargetFile(Path sourceFile, Path targetFile) {
+	public void missingTargetFile(Path sourceFile, Path targetFile) throws IOException {
 		log.info("Copying file to " + targetFile);
-
+		if (!synchSet.isDryRun()) {
+			Files.copy(sourceFile, targetFile);
+		}
+		stats.copiedFile();
 	}
 
 }

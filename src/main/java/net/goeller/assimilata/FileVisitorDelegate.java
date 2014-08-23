@@ -1,5 +1,6 @@
 package net.goeller.assimilata;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -10,8 +11,11 @@ public interface FileVisitorDelegate {
 
 	List<String> getIgnoreList();
 
-	void missingTargetDir(Path sourceDir, Path targetDir);
+	void missingTargetDirEntered(Path sourceDir, Path targetDir) throws IOException;
 
-	void missingTargetFile(Path sourceFile, Path targetFile);
+	default void missingTargetDirLeft(Path sourceDir, Path targetDir) throws IOException {
+	};
+
+	void missingTargetFile(Path sourceFile, Path targetFile) throws IOException;
 
 }
