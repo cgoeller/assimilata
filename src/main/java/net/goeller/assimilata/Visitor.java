@@ -13,57 +13,52 @@ import org.slf4j.LoggerFactory;
 public class Visitor extends SimpleFileVisitor<Path> {
 
 	private final Logger log = LoggerFactory.getLogger(Visitor.class);
-	private final SynchSet synchSet;
+	private final FileVisitorDelegate delegate;
 
 	private Path currentTargetPath;
-	
-	public Visitor(SynchSet synchSet) {
-		this.synchSet = synchSet;
+
+	public Visitor(FileVisitorDelegate delegate) {
+		this.delegate = delegate;
 	}
 
 	@Override
 	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 
-		if (dir.equals(synchSet.getSourceDir())) {
-			currentTargetPath = synchSet.getTargetDir();
-		}
-		else {
+		if (dir.equals(delegate.getSource())) {
+			currentTargetPath = delegate.getTarget();
+		} else {
 			currentTargetPath = currentTargetPath.resolve(dir.getFileName());
 		}
-		
-		//log.info("Entered directory: " + dir + "  target is : " + currentTargetPath);
-		
+
+		log.debug("Entered source directory: " + dir);
+
 		if (!Files.isDirectory(currentTargetPath)) {
-			System.out.println("target dir not found: " + currentTargetPath);
+			delegate.missingTargetDir(dir, currentTargetPath);
 		}
-		
+
 		return FileVisitResult.CONTINUE;
 	}
-	
+
 	@Override
 	public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-		
 		currentTargetPath = currentTargetPath.getParent();
-		
-		//log.info("Left directory: " + dir);
+		log.debug("Left source directory: " + dir);
 		return FileVisitResult.CONTINUE;
 	}
 
 	@Override
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
-		if (synchSet.getIgnoreList().contains(file.getFileName().toString())) {
+		if (delegate.getIgnoreList().contains(file.getFileName().toString())) {
 			return FileVisitResult.CONTINUE;
 		}
-		
+
 		Path targetFile = currentTargetPath.resolve(file.getFileName());
-		
-		
+
 		if (!Files.isRegularFile(targetFile)) {
-			System.out.println("target file not found: " + targetFile);
+			delegate.missingTargetFile(file, targetFile);
 		}
-		
-		//log.info("Found file: " + file);
+
 		return FileVisitResult.CONTINUE;
 	}
 
