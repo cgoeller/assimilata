@@ -7,13 +7,12 @@ import java.util.List;
 public class SynchSet {
 
 	public enum Option {
-		COPY_TO_TARGET, DELETE_FROM_TARGET;
+		COPY_TO_TARGET, DELETE_FROM_TARGET, DRY_RUN, COMPARE_CONTENT;
 	}
 
 	private final Path sourceDir;
 	private final Path targetDir;
-	private boolean dryRun;
-	private Option[] options = Option.values();
+	private Option[] options = { Option.COPY_TO_TARGET, Option.DELETE_FROM_TARGET };
 
 	private List<String> ignoreList = new ArrayList<>();
 
@@ -45,12 +44,8 @@ public class SynchSet {
 		return targetDir;
 	}
 
-	public void setDryRun(boolean dryRun) {
-		this.dryRun = dryRun;
-	}
-
 	public boolean isDryRun() {
-		return dryRun;
+		return hasOption(Option.DRY_RUN);
 	}
 
 	public void ignore(String value) {

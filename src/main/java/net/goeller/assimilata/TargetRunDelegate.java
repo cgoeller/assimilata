@@ -32,6 +32,11 @@ public class TargetRunDelegate implements FileVisitorDelegate {
 	}
 
 	@Override
+	public boolean compareContent() {
+		return false;
+	}
+	
+	@Override
 	public List<String> getIgnoreList() {
 		return Collections.emptyList();
 	}

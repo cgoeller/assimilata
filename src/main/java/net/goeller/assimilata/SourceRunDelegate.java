@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
+import net.goeller.assimilata.SynchSet.Option;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,11 @@ public class SourceRunDelegate implements FileVisitorDelegate {
 		return synchSet.getTargetDir();
 	}
 
+	@Override
+	public boolean compareContent() {
+		return synchSet.hasOption(Option.COMPARE_CONTENT);
+	}
+	
 	@Override
 	public List<String> getIgnoreList() {
 		return synchSet.getIgnoreList();

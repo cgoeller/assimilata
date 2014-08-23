@@ -14,8 +14,7 @@ public class Assimilata {
 
 		SynchSet set = new SynchSet(sourceDir, targetDir);
 		set.ignore("Thumbs.db");
-		//set.setDryRun(true);
-		set.setOptions(Option.COPY_TO_TARGET);
+		set.setOptions(Option.COPY_TO_TARGET, Option.DRY_RUN, Option.COMPARE_CONTENT);
 
 		// do some action
 		new Syncher().synch(set);

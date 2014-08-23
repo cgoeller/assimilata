@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +66,12 @@ public class Visitor extends SimpleFileVisitor<Path> {
 			delegate.missingTargetFile(file, targetFile);
 		} else if (Files.size(file) != Files.size(targetFile)) {
 			delegate.differentTargetFile(file, targetFile);
+		} else {
+			if (delegate.compareContent() && !FileUtils.contentEquals(file.toFile(), targetFile.toFile())) {
+				delegate.differentTargetFile(file, targetFile);
+			}
 		}
 
 		return FileVisitResult.CONTINUE;
 	}
-
 }
