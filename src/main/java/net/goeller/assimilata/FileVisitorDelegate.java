@@ -18,4 +18,7 @@ public interface FileVisitorDelegate {
 
 	void missingTargetFile(Path sourceFile, Path targetFile) throws IOException;
 
+	default void differentTargetFile(Path sourceFile, Path targetFile) throws IOException {
+	};
+
 }

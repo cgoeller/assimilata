@@ -41,11 +41,11 @@ public class Visitor extends SimpleFileVisitor<Path> {
 
 	@Override
 	public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-		
+
 		if (!Files.isDirectory(currentTargetPath)) {
 			delegate.missingTargetDirLeft(dir, currentTargetPath);
 		}
-		
+
 		log.debug("Left source directory: " + dir);
 		currentTargetPath = currentTargetPath.getParent();
 		return FileVisitResult.CONTINUE;
@@ -63,6 +63,8 @@ public class Visitor extends SimpleFileVisitor<Path> {
 
 		if (!Files.isRegularFile(targetFile)) {
 			delegate.missingTargetFile(file, targetFile);
+		} else if (Files.size(file) != Files.size(targetFile)) {
+			delegate.differentTargetFile(file, targetFile);
 		}
 
 		return FileVisitResult.CONTINUE;

@@ -3,6 +3,7 @@ package net.goeller.assimilata;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -48,9 +49,18 @@ public class SourceRunDelegate implements FileVisitorDelegate {
 	public void missingTargetFile(Path sourceFile, Path targetFile) throws IOException {
 		log.info("Copying file to " + targetFile);
 		if (!synchSet.isDryRun()) {
-			Files.copy(sourceFile, targetFile);
+			Files.copy(sourceFile, targetFile, StandardCopyOption.COPY_ATTRIBUTES);
 		}
 		stats.copiedFile();
+	}
+
+	@Override
+	public void differentTargetFile(Path sourceFile, Path targetFile) throws IOException {
+		log.info("Overwriting file " + targetFile);
+		if (!synchSet.isDryRun()) {
+			Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+		}
+		stats.overwriteFile();
 	}
 
 }
