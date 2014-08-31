@@ -23,12 +23,12 @@ public class TargetRunDelegate implements FileVisitorDelegate {
 
 	@Override
 	public Path getSource() {
-		return synchSet.getTargetDir();
+		return synchSet.getTargetPath();
 	}
 
 	@Override
 	public Path getTarget() {
-		return synchSet.getSourceDir();
+		return synchSet.getSourcePath();
 	}
 
 	@Override

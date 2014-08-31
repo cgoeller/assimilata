@@ -15,11 +15,11 @@ public class Syncher {
 	public void synch(final SynchSet synchSet) {
 
 		log.info("Checking directories before synchronization");
-		if (!Files.isDirectory(synchSet.getSourceDir())) {
+		if (!Files.isDirectory(synchSet.getSourcePath())) {
 			log.error("Source directory does not exist: " + synchSet.getSourceDir());
 			return;
 		}
-		if (!Files.isDirectory(synchSet.getTargetDir())) {
+		if (!Files.isDirectory(synchSet.getTargetPath())) {
 			log.error("Target directory does not exist: " + synchSet.getTargetDir());
 			return;
 		}
@@ -36,7 +36,7 @@ public class Syncher {
 		if (synchSet.hasOption(Option.COPY_TO_TARGET)) {
 			try {
 				log.info("Scanning source tree for files to copy");
-				Files.walkFileTree(synchSet.getSourceDir(), visitor);
+				Files.walkFileTree(synchSet.getSourcePath(), visitor);
 				log.info("Finished scanning source tree");
 			} catch (IOException e) {
 				log.error("Error while walking source tree", e);
@@ -46,7 +46,7 @@ public class Syncher {
 		if (synchSet.hasOption(Option.DELETE_FROM_TARGET)) {
 			try {
 				log.info("Scanning target tree for files to delete");
-				Files.walkFileTree(synchSet.getTargetDir(), visitor2);
+				Files.walkFileTree(synchSet.getTargetPath(), visitor2);
 				log.info("Finished scanning target tree");
 			} catch (IOException e) {
 				log.error("Error while walking target tree", e);

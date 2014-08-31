@@ -25,19 +25,19 @@ public class SourceRunDelegate implements FileVisitorDelegate {
 
 	@Override
 	public Path getSource() {
-		return synchSet.getSourceDir();
+		return synchSet.getSourcePath();
 	}
 
 	@Override
 	public Path getTarget() {
-		return synchSet.getTargetDir();
+		return synchSet.getTargetPath();
 	}
 
 	@Override
 	public boolean compareContent() {
 		return synchSet.hasOption(Option.COMPARE_CONTENT);
 	}
-	
+
 	@Override
 	public List<String> getIgnoreList() {
 		return synchSet.getIgnoreList();
