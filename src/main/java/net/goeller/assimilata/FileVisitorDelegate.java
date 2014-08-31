@@ -20,7 +20,9 @@ public interface FileVisitorDelegate {
 
 	default void differentTargetFile(Path sourceFile, Path targetFile) throws IOException {
 	};
-	
+
+	default void equalFileFound(Path sourceFile, Path targetFile) {};
+
 	boolean compareContent();
 
 }

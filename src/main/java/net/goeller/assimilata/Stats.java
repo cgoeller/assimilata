@@ -12,12 +12,19 @@ public class Stats {
 
 	private final MetricRegistry metrics = new MetricRegistry();
 
+	private final Counter equalFiles = metrics.counter(MetricRegistry.name(Stats.class, "equalFiles"));
+	
 	private final Counter copiedFiles = metrics.counter(MetricRegistry.name(Stats.class, "copiedFiles"));
 	private final Counter overwrittenFiles = metrics.counter(MetricRegistry.name(Stats.class, "overwrittenFiles"));
 	private final Counter copiedDirs = metrics.counter(MetricRegistry.name(Stats.class, "copiedDirs"));
+	
 	private final Counter deletedFiles = metrics.counter(MetricRegistry.name(Stats.class, "deletedFiles"));
 	private final Counter deletedDirs = metrics.counter(MetricRegistry.name(Stats.class, "deletedDirs"));
 
+	public void equalFile() {
+		equalFiles.inc();
+	}
+	
 	public void copiedFile() {
 		copiedFiles.inc();
 	}

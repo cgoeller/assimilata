@@ -66,10 +66,11 @@ public class Visitor extends SimpleFileVisitor<Path> {
 			delegate.missingTargetFile(file, targetFile);
 		} else if (Files.size(file) != Files.size(targetFile)) {
 			delegate.differentTargetFile(file, targetFile);
-		} else {
-			if (delegate.compareContent() && !FileUtils.contentEquals(file.toFile(), targetFile.toFile())) {
-				delegate.differentTargetFile(file, targetFile);
-			}
+		} else if (delegate.compareContent() && !FileUtils.contentEquals(file.toFile(), targetFile.toFile())) {
+			delegate.differentTargetFile(file, targetFile);
+		}
+		else {
+			delegate.equalFileFound(file, targetFile);
 		}
 
 		return FileVisitResult.CONTINUE;

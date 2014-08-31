@@ -3,7 +3,7 @@ package net.goeller.assimilata;
 import java.io.IOException;
 import java.net.URL;
 
-import net.goeller.assimilata.SynchSet.Option;
+import net.goeller.assimilata.SyncSet.Option;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -11,7 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class SynchSetReaderTest {
+public class SyncSetReaderTest {
 
 	@Rule
 	public ExpectedException exp = ExpectedException.none();
@@ -19,11 +19,11 @@ public class SynchSetReaderTest {
 	@Test
 	public void testWrite() throws IOException {
 
-		SynchSet set = new SynchSet("f:/Media/Photos", "m:/Photos");
+		SyncSet set = new SyncSet("f:/Media/Photos", "m:/Photos");
 		set.ignore("Thumbs.db");
 		set.setOptions(Option.COPY_TO_TARGET, Option.DRY_RUN, Option.COMPARE_CONTENT);
 
-		String json = new SynchSetReader().write(set);
+		String json = new SyncSetReader().write(set);
 		System.out.println(json);
 	}
 
@@ -33,12 +33,12 @@ public class SynchSetReaderTest {
 		URL resource = getClass().getResource("/test.cfg");
 		String json = IOUtils.toString(resource);
 
-		SynchSet synchSet = new SynchSetReader().read(json);
+		SyncSet syncSet = new SyncSetReader().read(json);
 
-		Assert.assertEquals("f:/Media/Photos", synchSet.getSourceDir());
-		Assert.assertEquals("m:/Photos", synchSet.getTargetDir());
+		Assert.assertEquals("f:/Media/Photos", syncSet.getSourceDir());
+		Assert.assertEquals("m:/Photos", syncSet.getTargetDir());
 
-		System.out.println(synchSet);
+		System.out.println(syncSet);
 	}
 
 }

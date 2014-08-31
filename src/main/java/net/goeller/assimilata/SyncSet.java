@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SynchSet {
+public class SyncSet {
 
 	public enum Option {
 		COPY_TO_TARGET, DELETE_FROM_TARGET, DRY_RUN, COMPARE_CONTENT;
@@ -22,7 +22,7 @@ public class SynchSet {
 	private Option[] options = { Option.COPY_TO_TARGET, Option.DELETE_FROM_TARGET };
 
 	@JsonCreator
-	public SynchSet(@JsonProperty("sourceDir")
+	public SyncSet(@JsonProperty("sourceDir")
 	final String sourceDir, @JsonProperty("targetDir")
 	final String targetDir) {
 		this.sourceDir = sourceDir;

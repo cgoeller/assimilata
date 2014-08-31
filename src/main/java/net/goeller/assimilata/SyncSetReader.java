@@ -6,23 +6,23 @@ import java.nio.file.Path;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class SynchSetReader {
+public class SyncSetReader {
 
 	ObjectMapper mapper = new ObjectMapper();
 
-	public SynchSetReader() {
+	public SyncSetReader() {
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
-	public SynchSet read(Path file) throws IOException {
-		return mapper.readValue(file.toFile(), SynchSet.class);
+	public SyncSet read(Path file) throws IOException {
+		return mapper.readValue(file.toFile(), SyncSet.class);
 	}
 
-	public SynchSet read(String json) throws IOException {
-		return mapper.readValue(json, SynchSet.class);
+	public SyncSet read(String json) throws IOException {
+		return mapper.readValue(json, SyncSet.class);
 	}
 
-	public String write(SynchSet set) throws IOException {
+	public String write(SyncSet set) throws IOException {
 		return mapper.writeValueAsString(set);
 	}
 }
