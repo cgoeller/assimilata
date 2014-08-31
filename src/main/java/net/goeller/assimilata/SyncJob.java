@@ -80,7 +80,7 @@ public class SyncJob {
 				Files.createDirectory(path1);
 				break;
 			default:
-				break;
+				throw new IllegalStateException("Invalid file option: " + fileOption);
 			}
 		}
 

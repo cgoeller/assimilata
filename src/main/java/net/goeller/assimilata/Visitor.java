@@ -24,7 +24,7 @@ public class Visitor extends SimpleFileVisitor<Path> {
 
 	@Override
 	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-		log.debug("Entered source directory: " + dir);
+		log.info("Entered source directory: " + dir);
 
 		if (dir.equals(delegate.getSource())) {
 			currentTargetPath = delegate.getTarget();
