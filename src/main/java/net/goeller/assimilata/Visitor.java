@@ -35,9 +35,8 @@ public class Visitor extends SimpleFileVisitor<Path> {
 
     if (!Files.isDirectory(currentTargetPath)) {
       delegate.missingTargetDirEntered(dir, currentTargetPath);
-    }
-    else if (!Files.getLastModifiedTime(dir)
-            .equals(Files.getLastModifiedTime(currentTargetPath))) {
+    } else if (!Files.getLastModifiedTime(dir)
+        .equals(Files.getLastModifiedTime(currentTargetPath))) {
       delegate.differentDate(dir, currentTargetPath);
     }
 
