@@ -1,0 +1,9 @@
+---
+sourceDir: f:/Media/Photos
+targetDir: m:/Photos
+ignoreList:
+  - Thumbs.db
+options:
+  - COPY_TO_TARGET
+  - DRY_RUN
+  - COMPARE_CONTENT

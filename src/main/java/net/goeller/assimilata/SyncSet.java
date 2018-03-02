@@ -1,90 +1,87 @@
 package net.goeller.assimilata;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class SyncSet {
 
-	public enum Option {
-		COPY_TO_TARGET, DELETE_FROM_TARGET, DRY_RUN, COMPARE_CONTENT;
-	}
+    private final String sourceDir;
+    private final String targetDir;
+    private final List<String> ignoreList = new ArrayList<>();
+    private Option[] options = {Option.COPY_TO_TARGET, Option.DELETE_FROM_TARGET};
+    @JsonCreator
+    public SyncSet(@JsonProperty("sourceDir") final String sourceDir, @JsonProperty("targetDir") final String targetDir) {
+        this.sourceDir = sourceDir;
+        this.targetDir = targetDir;
+    }
 
-	private final String sourceDir;
-	private final String targetDir;
-	private final List<String> ignoreList = new ArrayList<>();
-	private Option[] options = { Option.COPY_TO_TARGET, Option.DELETE_FROM_TARGET };
+    public Option[] getOptions() {
+        return options;
+    }
 
-	@JsonCreator
-	public SyncSet(@JsonProperty("sourceDir")
-	final String sourceDir, @JsonProperty("targetDir")
-	final String targetDir) {
-		this.sourceDir = sourceDir;
-		this.targetDir = targetDir;
-	}
+    public void setOptions(Option... options) {
+        this.options = options;
+    }
 
-	public void setOptions(Option... options) {
-		this.options = options;
-	}
+    public String getTargetDir() {
+        return targetDir;
+    }
 
-	public Option[] getOptions() {
-		return options;
-	}
+    public String getSourceDir() {
+        return sourceDir;
+    }
 
-	public String getTargetDir() {
-		return targetDir;
-	}
+    public List<String> getIgnoreList() {
+        return ignoreList;
+    }
 
-	public String getSourceDir() {
-		return sourceDir;
-	}
+    public void ignore(String value) {
+        ignoreList.add(value);
+    }
 
-	public List<String> getIgnoreList() {
-		return ignoreList;
-	}
+    // ---- convenience methods
 
-	// ---- convenience methods
+    @JsonIgnore
+    public Path getTargetPath() {
+        return FileSystems.getDefault().getPath(targetDir);
+    }
 
-	public void ignore(String value) {
-		ignoreList.add(value);
-	}
+    @JsonIgnore
+    public Path getSourcePath() {
+        return FileSystems.getDefault().getPath(sourceDir);
+    }
 
-	@JsonIgnore
-	public Path getTargetPath() {
-		return FileSystems.getDefault().getPath(targetDir);
-	}
+    public boolean hasOption(Option toTest) {
+        if (options != null) {
+            for (Option option : options) {
+                if (option == toTest) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	@JsonIgnore
-	public Path getSourcePath() {
-		return FileSystems.getDefault().getPath(sourceDir);
-	}
+    @JsonIgnore
+    public boolean isDryRun() {
+        return hasOption(Option.DRY_RUN);
+    }
 
-	public boolean hasOption(Option toTest) {
-		if (options != null) {
-			for (Option option : options) {
-				if (option == toTest) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    @Override
+    public String toString() {
+        return "SynchSet [sourceDir=" + sourceDir + ", targetDir=" + targetDir + ", ignoreList=" + ignoreList
+                + ", options=" + Arrays.toString(options) + "]";
+    }
 
-	@JsonIgnore
-	public boolean isDryRun() {
-		return hasOption(Option.DRY_RUN);
-	}
-
-	@Override
-	public String toString() {
-		return "SynchSet [sourceDir=" + sourceDir + ", targetDir=" + targetDir + ", ignoreList=" + ignoreList
-				+ ", options=" + Arrays.toString(options) + "]";
-	}
+    public enum Option {
+        COPY_TO_TARGET, DELETE_FROM_TARGET, DRY_RUN, COMPARE_CONTENT;
+    }
 
 }

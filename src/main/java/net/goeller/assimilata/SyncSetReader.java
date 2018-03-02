@@ -1,28 +1,39 @@
 package net.goeller.assimilata;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 import java.io.IOException;
 import java.nio.file.Path;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 public class SyncSetReader {
 
-	ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper jsonMapper = new ObjectMapper();
+    private ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
-	public SyncSetReader() {
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-	}
+    public SyncSetReader() {
+        jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
 
-	public SyncSet read(Path file) throws IOException {
-		return mapper.readValue(file.toFile(), SyncSet.class);
-	}
+    public SyncSet read(Path file) throws IOException {
+        if (file.endsWith(".yml")) {
+            return yamlMapper.readValue(file.toFile(), SyncSet.class);
 
-	public SyncSet read(String json) throws IOException {
-		return mapper.readValue(json, SyncSet.class);
-	}
+        } else {
+            return jsonMapper.readValue(file.toFile(), SyncSet.class);
+        }
+    }
 
-	public String write(SyncSet set) throws IOException {
-		return mapper.writeValueAsString(set);
-	}
+    public SyncSet readJson(String content) throws IOException {
+        return jsonMapper.readValue(content, SyncSet.class);
+    }
+
+    public SyncSet readYaml(String content) throws IOException {
+        return yamlMapper.readValue(content, SyncSet.class);
+    }
+
+    public String writeJson(SyncSet set) throws IOException {
+        return jsonMapper.writeValueAsString(set);
+    }
 }
