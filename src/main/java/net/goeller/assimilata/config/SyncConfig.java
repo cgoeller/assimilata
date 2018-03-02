@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public final class SyncConfig {
   private final boolean dryRun;
+  private final String schedule;
   private final List<String> ignoreList;
   private final List<SyncTask> tasks;
 }

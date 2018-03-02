@@ -46,11 +46,14 @@ public class SyncConfigReaderTest {
   @Test
   public void write() throws IOException {
 
-    SyncTask job = new SyncTask("Photo sync","/from", "/to", true, false, true);
+    SyncTask job = new SyncTask("Photo sync", "/from", "/to", true, false, true);
 
     SyncConfig cfg =
         new SyncConfig(
-            false, Collections.singletonList("ignore.txt"), Collections.singletonList(job));
+            false,
+            "0 0 * * * *",
+            Collections.singletonList("ignore.txt"),
+            Collections.singletonList(job));
     String out = new SyncConfigReader().write(cfg);
 
     System.out.println(out);
