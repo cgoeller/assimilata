@@ -7,45 +7,71 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Stats {
-    private final Logger log = LoggerFactory.getLogger(Stats.class);
+  private final Logger log = LoggerFactory.getLogger(Stats.class);
 
-    private final MetricRegistry metrics = new MetricRegistry();
+  private final MetricRegistry metrics = new MetricRegistry();
 
-    private final Counter equalFiles = metrics.counter(MetricRegistry.name(Stats.class, "equalFiles"));
+  private final Counter equalFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "equalFiles"));
 
-    private final Counter copiedFiles = metrics.counter(MetricRegistry.name(Stats.class, "copiedFiles"));
-    private final Counter overwrittenFiles = metrics.counter(MetricRegistry.name(Stats.class, "overwrittenFiles"));
-    private final Counter copiedDirs = metrics.counter(MetricRegistry.name(Stats.class, "copiedDirs"));
+  private final Counter copiedFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "copiedFiles"));
+  private final Counter overwrittenFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "overwrittenFiles"));
 
-    private final Counter deletedFiles = metrics.counter(MetricRegistry.name(Stats.class, "deletedFiles"));
-    private final Counter deletedDirs = metrics.counter(MetricRegistry.name(Stats.class, "deletedDirs"));
+  private final Counter overwrittenSizeFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "overwrittenSizeFiles"));
+  private final Counter overwrittenDateFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "overwrittenDateFiles"));
+  private final Counter overwrittenContentFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "overwrittenContentFiles"));
 
-    public void equalFile() {
-        equalFiles.inc();
+  private final Counter updatedTime =
+      metrics.counter(MetricRegistry.name(Stats.class, "updatedTime"));
+
+  private final Counter copiedDirs =
+      metrics.counter(MetricRegistry.name(Stats.class, "copiedDirs"));
+
+  private final Counter deletedFiles =
+      metrics.counter(MetricRegistry.name(Stats.class, "deletedFiles"));
+  private final Counter deletedDirs =
+      metrics.counter(MetricRegistry.name(Stats.class, "deletedDirs"));
+
+  public void equalFile() {
+    equalFiles.inc();
+  }
+
+  public void copiedFile() {
+    copiedFiles.inc();
+  }
+
+  public void overwriteFile(String hint) {
+    overwrittenFiles.inc();
+    if ("size".equals(hint)) {
+      overwrittenSizeFiles.inc();
+    } else if ("content".equals(hint)) {
+      overwrittenContentFiles.inc();
     }
+  }
 
-    public void copiedFile() {
-        copiedFiles.inc();
-    }
+  public void copiedDir() {
+    copiedDirs.inc();
+  }
 
-    public void overwriteFile() {
-        overwrittenFiles.inc();
-    }
+  public void deletedFile() {
+    deletedFiles.inc();
+  }
 
-    public void copiedDir() {
-        copiedDirs.inc();
-    }
+  public void deletedDir() {
+    deletedDirs.inc();
+  }
 
-    public void deletedFile() {
-        deletedFiles.inc();
-    }
+  public void updatedTime() {
+    updatedTime.inc();
+  }
 
-    public void deletedDir() {
-        deletedDirs.inc();
-    }
-
-    public void report() {
-        Slf4jReporter reporter = Slf4jReporter.forRegistry(metrics).outputTo(log).build();
-        reporter.report();
-    }
+  public void report() {
+    Slf4jReporter reporter = Slf4jReporter.forRegistry(metrics).outputTo(log).build();
+    reporter.report();
+  }
 }

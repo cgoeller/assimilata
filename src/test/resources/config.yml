@@ -1,9 +1,9 @@
 ---
-dryRun: false
+dryRun: true
 ignoreList: [Thumbs.db]
 tasks:
   - name: photos
-    sourceDir: c:/Media/Photos
-    targetDir: g:/Media/Photos
+    sourceDir: f:/Media/Photos
+    targetDir: m:/Photos
     copyToTarget: true
     deleteOrphans: true

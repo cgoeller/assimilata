@@ -13,65 +13,74 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class Visitor extends SimpleFileVisitor<Path> {
 
-    private final Logger log = LoggerFactory.getLogger(Visitor.class);
-    private final FileVisitorDelegate delegate;
+  private final Logger log = LoggerFactory.getLogger(Visitor.class);
+  private final FileVisitorDelegate delegate;
 
-    private Path currentTargetPath;
+  private Path currentTargetPath;
 
-    public Visitor(FileVisitorDelegate delegate) {
-        this.delegate = delegate;
+  public Visitor(FileVisitorDelegate delegate) {
+    this.delegate = delegate;
+  }
+
+  @Override
+  public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+    log.info("Entered source directory: " + dir);
+
+    if (dir.equals(delegate.getSource())) {
+      currentTargetPath = delegate.getTarget();
+    } else {
+      Path fileName = dir.getFileName();
+      currentTargetPath = currentTargetPath.resolve(fileName);
     }
 
-    @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        log.info("Entered source directory: " + dir);
-
-        if (dir.equals(delegate.getSource())) {
-            currentTargetPath = delegate.getTarget();
-        } else {
-            Path fileName = dir.getFileName();
-            currentTargetPath = currentTargetPath.resolve(fileName);
-        }
-
-        if (!Files.isDirectory(currentTargetPath)) {
-            delegate.missingTargetDirEntered(dir, currentTargetPath);
-        }
-
-        return FileVisitResult.CONTINUE;
+    if (!Files.isDirectory(currentTargetPath)) {
+      delegate.missingTargetDirEntered(dir, currentTargetPath);
+    }
+    else if (!Files.getLastModifiedTime(dir)
+            .equals(Files.getLastModifiedTime(currentTargetPath))) {
+      delegate.differentDate(dir, currentTargetPath);
     }
 
-    @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+    return FileVisitResult.CONTINUE;
+  }
 
-        if (!Files.isDirectory(currentTargetPath)) {
-            delegate.missingTargetDirLeft(dir, currentTargetPath);
-        }
+  @Override
+  public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
 
-        log.debug("Left source directory: " + dir);
-        currentTargetPath = currentTargetPath.getParent();
-        return FileVisitResult.CONTINUE;
+    if (!Files.isDirectory(currentTargetPath)) {
+      delegate.missingTargetDirLeft(dir, currentTargetPath);
     }
 
-    @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        log.debug("Visited file: " + file);
+    log.debug("Left source directory: " + dir);
+    currentTargetPath = currentTargetPath.getParent();
+    return FileVisitResult.CONTINUE;
+  }
 
-        if (delegate.getIgnoreList().contains(file.getFileName().toString())) {
-            return FileVisitResult.CONTINUE;
-        }
+  @Override
+  public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+    log.debug("Visited file: " + file);
 
-        Path targetFile = currentTargetPath.resolve(file.getFileName());
-
-        if (!Files.isRegularFile(targetFile)) {
-            delegate.missingTargetFile(file, targetFile);
-        } else if (Files.size(file) != Files.size(targetFile)) {
-            delegate.differentTargetFile(file, targetFile);
-        } else if (delegate.compareContent() && !FileUtils.contentEquals(file.toFile(), targetFile.toFile())) {
-            delegate.differentTargetFile(file, targetFile);
-        } else {
-            delegate.equalFileFound(file, targetFile);
-        }
-
-        return FileVisitResult.CONTINUE;
+    if (delegate.getIgnoreList().contains(file.getFileName().toString())) {
+      return FileVisitResult.CONTINUE;
     }
+
+    Path targetFile = currentTargetPath.resolve(file.getFileName());
+
+    if (!Files.isRegularFile(targetFile)) {
+      delegate.missingTargetFile(file, targetFile);
+    } else if (Files.size(file) != Files.size(targetFile)) { // different size
+      delegate.differentTargetFile(file, targetFile, "size");
+    } else if (delegate.compareContent()
+        && !FileUtils.contentEquals(
+            file.toFile(), targetFile.toFile())) { // optional different content
+      delegate.differentTargetFile(file, targetFile, "content");
+    } else if (!Files.getLastModifiedTime(file)
+        .equals(Files.getLastModifiedTime(targetFile))) { // different date
+      delegate.differentDate(file, targetFile);
+    } else {
+      delegate.equalFileFound(file, targetFile);
+    }
+
+    return FileVisitResult.CONTINUE;
+  }
 }
