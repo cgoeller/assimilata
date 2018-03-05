@@ -1,4 +1,4 @@
-package net.goeller.assimilata;
+package net.goeller.assimilata.metrics;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -21,8 +21,6 @@ public class Stats {
 
   private final Counter overwrittenSizeFiles =
       metrics.counter(MetricRegistry.name(Stats.class, "overwrittenSizeFiles"));
-  private final Counter overwrittenDateFiles =
-      metrics.counter(MetricRegistry.name(Stats.class, "overwrittenDateFiles"));
   private final Counter overwrittenContentFiles =
       metrics.counter(MetricRegistry.name(Stats.class, "overwrittenContentFiles"));
 

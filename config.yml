@@ -1,6 +1,5 @@
 ---
-dryRun: false
-schedule: 0 0 * * * *
+dryRun: true
 ignoreList: [Thumbs.db]
 tasks:
   - name: photos

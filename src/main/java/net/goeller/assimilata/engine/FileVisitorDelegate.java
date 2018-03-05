@@ -1,4 +1,4 @@
-package net.goeller.assimilata;
+package net.goeller.assimilata.engine;
 
 import java.io.IOException;
 import java.nio.file.Path;

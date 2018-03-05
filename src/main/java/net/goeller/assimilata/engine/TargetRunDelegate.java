@@ -1,5 +1,6 @@
-package net.goeller.assimilata;
+package net.goeller.assimilata.engine;
 
+import net.goeller.assimilata.metrics.Stats;
 import net.goeller.assimilata.config.SyncTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

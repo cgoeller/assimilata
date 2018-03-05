@@ -51,7 +51,6 @@ public class SyncConfigReaderTest {
     SyncConfig cfg =
         new SyncConfig(
             false,
-            "0 0 * * * *",
             Collections.singletonList("ignore.txt"),
             Collections.singletonList(job));
     String out = new SyncConfigReader().write(cfg);

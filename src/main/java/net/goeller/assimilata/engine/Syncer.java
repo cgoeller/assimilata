@@ -1,8 +1,8 @@
-package net.goeller.assimilata;
+package net.goeller.assimilata.engine;
 
-import net.goeller.assimilata.SyncJob.Entry;
 import net.goeller.assimilata.config.SyncConfig;
 import net.goeller.assimilata.config.SyncTask;
+import net.goeller.assimilata.metrics.Stats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ public class Syncer {
   private final Logger log = LoggerFactory.getLogger(Syncer.class);
   private SyncConfig config;
 
-  public SyncJob prepare(final SyncTask syncTask) {
+  private SyncJob prepare(final SyncTask syncTask) {
 
     log.info("Starting prepare phase for task: {}", syncTask.getName());
     log.info("Checking directories");
@@ -68,7 +68,7 @@ public class Syncer {
     return syncJob;
   }
 
-  public void sync(final SyncJob syncJob) {
+  private void sync(final SyncJob syncJob) {
     log.info("Starting sync phase for task: {}", syncJob.getSyncTask().getName());
     if (config.isDryRun()) {
       log.info("Dry run is active");
@@ -80,13 +80,7 @@ public class Syncer {
             + syncJob.getSyncTask().getTargetDir());
 
     try {
-      for (Entry entry : syncJob.getSyncEntries()) {
-        if (config.isDryRun()) {
-          entry.log();
-        } else {
-          entry.execute();
-        }
-      }
+      syncJob.doExecute(config.isDryRun());
     } catch (IOException e) {
       log.error("Error while synchronizing directories", e);
     }
@@ -96,12 +90,6 @@ public class Syncer {
 
   public void sync(final SyncConfig config) {
     this.config = config;
-
-    config
-        .getTasks()
-        .forEach(
-            syncTask -> {
-              sync(prepare(syncTask));
-            });
+    config.getTasks().forEach(syncTask -> sync(prepare(syncTask)));
   }
 }

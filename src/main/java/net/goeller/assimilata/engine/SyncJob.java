@@ -1,4 +1,4 @@
-package net.goeller.assimilata;
+package net.goeller.assimilata.engine;
 
 import net.goeller.assimilata.config.SyncTask;
 import org.slf4j.Logger;
@@ -42,8 +42,14 @@ public class SyncJob {
     syncEntries.add(new Entry(dir, fileTime, FileOption.mkdir));
   }
 
-  public List<Entry> getSyncEntries() {
-    return syncEntries;
+  public void doExecute(boolean dryRun) throws IOException {
+    for (Entry entry : syncEntries) {
+      if (dryRun) {
+        entry.log();
+      } else {
+        entry.execute();
+      }
+    }
   }
 
   enum FileOption {

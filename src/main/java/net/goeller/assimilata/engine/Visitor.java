@@ -1,4 +1,4 @@
-package net.goeller.assimilata;
+package net.goeller.assimilata.engine;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
