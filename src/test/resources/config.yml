@@ -7,3 +7,4 @@ tasks:
     targetDir: m:/Photos
     copyToTarget: true
     deleteOrphans: true
+    compareContent: true
