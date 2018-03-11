@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 @Component
 public class SyncExecutor {
 
+  private final Syncer syncer = new Syncer();
   private UI ui;
   private SyncConfig config;
   private ThreadPoolTaskScheduler scheduler;
@@ -46,11 +47,15 @@ public class SyncExecutor {
       if (ui != null) {
         ui.syncStarted();
       }
-      new Syncer().sync(config);
+      syncer.sync(config);
     } finally {
       if (ui != null) {
         ui.syncFinished();
       }
     }
+  }
+
+  public void cancel() {
+    syncer.cancel();
   }
 }

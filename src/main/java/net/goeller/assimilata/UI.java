@@ -22,6 +22,7 @@ public final class UI {
 
   private TrayIcon trayIcon;
   private JMenuItem syncMenuItem;
+  private JMenuItem cancelMenuItem;
 
   public UI() {
     try {
@@ -45,11 +46,22 @@ public final class UI {
   public void syncStarted() {
     notifyUser("Starting synchronisation");
     syncMenuItem.setEnabled(false);
+    cancelMenuItem.setEnabled(true);
   }
 
   public void syncFinished() {
     syncMenuItem.setEnabled(true);
+    cancelMenuItem.setEnabled(false);
     notifyUser("Finished synchronisation");
+  }
+
+  private ImageIcon loadIcon(String name) {
+    return new ImageIcon(getClass().getResource(name));
+  }
+
+  private void cancelSync() {
+    LOG.info("Cancelling synchronisation");
+    syncExecutor.cancel();
   }
 
   @PostConstruct
@@ -58,19 +70,22 @@ public final class UI {
     if (SystemTray.isSupported()) {
       LOG.info("Installing system tray icon");
       try {
-        ImageIcon icon = new ImageIcon(getClass().getResource("/sync.png"));
-
-        syncMenuItem = new JMenuItem("Start synchronisation", icon);
+        syncMenuItem = new JMenuItem("Run synchronisation", loadIcon("/sync.png"));
         syncMenuItem.setToolTipText("Starts the synchronisation");
         syncMenuItem.addActionListener(e -> syncExecutor.execSync());
 
-        icon = new ImageIcon(getClass().getResource("/logout.png"));
-        final JMenuItem exitItem = new JMenuItem("Exit Assimilata", icon);
+        cancelMenuItem = new JMenuItem("Cancel synchronisation", loadIcon("/forbidden.png"));
+        cancelMenuItem.setToolTipText("Cancels the synchronisation");
+        cancelMenuItem.addActionListener(e -> cancelSync());
+        cancelMenuItem.setEnabled(false);
+
+        final JMenuItem exitItem = new JMenuItem("Exit Assimilata", loadIcon("/logout.png"));
         exitItem.setToolTipText("Exits the application");
         exitItem.addActionListener(e -> shutdownService.initiateShutdown());
 
         final JPopupMenu popup = new JPopupMenu();
         popup.add(syncMenuItem);
+        popup.add(cancelMenuItem);
         popup.addSeparator();
         popup.add(exitItem);
 

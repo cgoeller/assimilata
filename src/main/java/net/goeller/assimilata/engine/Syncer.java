@@ -13,6 +13,7 @@ public class Syncer {
 
   private final Logger log = LoggerFactory.getLogger(Syncer.class);
   private SyncConfig config;
+  private volatile boolean canceled;
 
   private SyncJob prepare(final SyncTask syncTask) {
 
@@ -41,7 +42,7 @@ public class Syncer {
 
     if (syncTask.isCopyToTarget()) {
       Visitor visitor =
-          new Visitor(new SourceRunDelegate(syncTask, syncJob, stats, config.getIgnoreList()));
+          new Visitor(this, new SourceRunDelegate(syncTask, syncJob, stats, config.getIgnoreList()));
       try {
         log.info("Scanning source tree for files to copy");
         Files.walkFileTree(syncTask.getSourcePath(), visitor);
@@ -51,8 +52,12 @@ public class Syncer {
       }
     }
 
+    if (canceled) {
+      return syncJob;
+    }
+
     if (syncTask.isDeleteOrphans()) {
-      Visitor visitor = new Visitor(new TargetRunDelegate(syncTask, syncJob, stats));
+      Visitor visitor = new Visitor(this, new TargetRunDelegate(syncTask, syncJob, stats));
       try {
         log.info("Scanning target tree for files to delete");
         Files.walkFileTree(syncTask.getTargetPath(), visitor);
@@ -62,6 +67,10 @@ public class Syncer {
       }
     }
 
+    if (canceled) {
+      return syncJob;
+    }
+
     log.info("Finished prepare phase for task: {}", syncTask.getName());
     stats.report();
 
@@ -69,6 +78,10 @@ public class Syncer {
   }
 
   private void sync(final SyncJob syncJob) {
+    if (canceled) {
+      return;
+    }
+
     log.info("Starting sync phase for task: {}", syncJob.getSyncTask().getName());
     if (config.isDryRun()) {
       log.info("Dry run is active");
@@ -80,7 +93,7 @@ public class Syncer {
             + syncJob.getSyncTask().getTargetDir());
 
     try {
-      syncJob.doExecute(config.isDryRun());
+      syncJob.doExecute(this, config.isDryRun());
     } catch (IOException e) {
       log.error("Error while synchronizing directories", e);
     }
@@ -90,6 +103,22 @@ public class Syncer {
 
   public void sync(final SyncConfig config) {
     this.config = config;
-    config.getTasks().forEach(syncTask -> sync(prepare(syncTask)));
+    this.canceled = false;
+
+    for (SyncTask syncTask : config.getTasks()) {
+      SyncJob prepare = prepare(syncTask);
+      if (canceled) {
+        break;
+      }
+      sync(prepare);
+    }
+  }
+
+  public void cancel() {
+    canceled = true;
+  }
+
+  public boolean isCanceled() {
+    return canceled;
   }
 }

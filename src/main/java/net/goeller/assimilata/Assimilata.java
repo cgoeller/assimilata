@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -23,7 +22,6 @@ import java.util.concurrent.ScheduledFuture;
 @EnableScheduling
 public class Assimilata {
   private static final Logger LOG = LoggerFactory.getLogger(Assimilata.class);
-  private static ConfigurableApplicationContext context;
 
   public static void main(String[] args) {
 
@@ -31,7 +29,7 @@ public class Assimilata {
       SpringApplicationBuilder builder = new SpringApplicationBuilder(Assimilata.class);
       builder.bannerMode(Banner.Mode.OFF);
       builder.headless(false);
-      context = builder.run(args);
+      builder.run(args);
     } else {
       String configName = args[0];
       new Assimilata().start(configName);

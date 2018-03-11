@@ -14,12 +14,22 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class Visitor extends SimpleFileVisitor<Path> {
 
   private final Logger log = LoggerFactory.getLogger(Visitor.class);
+  private final Syncer syncer;
   private final FileVisitorDelegate delegate;
 
   private Path currentTargetPath;
 
-  public Visitor(FileVisitorDelegate delegate) {
+  public Visitor(Syncer syncer, FileVisitorDelegate delegate) {
+    this.syncer = syncer;
     this.delegate = delegate;
+  }
+
+  private FileVisitResult check(final FileVisitResult result) {
+    if (syncer.isCanceled()) {
+      return FileVisitResult.TERMINATE;
+    } else {
+      return result;
+    }
   }
 
   @Override
@@ -40,7 +50,7 @@ public class Visitor extends SimpleFileVisitor<Path> {
       delegate.differentDate(dir, currentTargetPath);
     }
 
-    return FileVisitResult.CONTINUE;
+    return check(FileVisitResult.CONTINUE);
   }
 
   @Override
@@ -52,7 +62,7 @@ public class Visitor extends SimpleFileVisitor<Path> {
 
     log.debug("Left source directory: " + dir);
     currentTargetPath = currentTargetPath.getParent();
-    return FileVisitResult.CONTINUE;
+    return check(FileVisitResult.CONTINUE);
   }
 
   @Override
@@ -60,7 +70,7 @@ public class Visitor extends SimpleFileVisitor<Path> {
     log.debug("Visited file: " + file);
 
     if (delegate.getIgnoreList().contains(file.getFileName().toString())) {
-      return FileVisitResult.CONTINUE;
+      return check(FileVisitResult.CONTINUE);
     }
 
     Path targetFile = currentTargetPath.resolve(file.getFileName());
@@ -80,6 +90,6 @@ public class Visitor extends SimpleFileVisitor<Path> {
       delegate.equalFileFound(file, targetFile);
     }
 
-    return FileVisitResult.CONTINUE;
+    return check(FileVisitResult.CONTINUE);
   }
 }

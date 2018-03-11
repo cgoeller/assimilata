@@ -42,8 +42,12 @@ public class SyncJob {
     syncEntries.add(new Entry(dir, fileTime, FileOption.mkdir));
   }
 
-  public void doExecute(boolean dryRun) throws IOException {
+  public void doExecute(Syncer syncer, boolean dryRun) throws IOException {
     for (Entry entry : syncEntries) {
+      if (syncer.isCanceled()) {
+        break;
+      }
+
       if (dryRun) {
         entry.log();
       } else {
