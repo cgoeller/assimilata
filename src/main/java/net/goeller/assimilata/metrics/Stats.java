@@ -16,6 +16,9 @@ public class Stats {
 
   private final Counter copiedFiles =
       metrics.counter(MetricRegistry.name(Stats.class, "copiedFiles"));
+  private final Counter copiedBytes =
+      metrics.counter(MetricRegistry.name(Stats.class, "copiedBytes"));
+
   private final Counter overwrittenFiles =
       metrics.counter(MetricRegistry.name(Stats.class, "overwrittenFiles"));
 
@@ -41,6 +44,10 @@ public class Stats {
 
   public void copiedFile() {
     copiedFiles.inc();
+  }
+
+  public void copiedBytes(long size) {
+    copiedBytes.inc(size);
   }
 
   public void overwriteFile(String hint) {

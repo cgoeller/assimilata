@@ -54,6 +54,7 @@ public class SourceRunDelegate implements FileVisitorDelegate {
   public void missingTargetDirEntered(Path sourceDir, Path targetDir) throws IOException {
     log.debug("Creating directory " + targetDir);
     syncJob.mkdir(targetDir, Files.getLastModifiedTime(sourceDir));
+    // TODO: File time will be changed when a file is copied into this folder...
     stats.copiedDir();
   }
 
@@ -62,6 +63,7 @@ public class SourceRunDelegate implements FileVisitorDelegate {
     log.debug("Copying file to " + targetFile);
     syncJob.copy(sourceFile, targetFile);
     stats.copiedFile();
+    stats.copiedBytes(Files.size(sourceFile));
   }
 
   @Override
@@ -74,6 +76,7 @@ public class SourceRunDelegate implements FileVisitorDelegate {
     }
     syncJob.copy(sourceFile, targetFile);
     stats.overwriteFile(hint);
+    stats.copiedBytes(Files.size(sourceFile));
   }
 
   @Override

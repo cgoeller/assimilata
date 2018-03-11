@@ -19,13 +19,19 @@ public class Syncer {
 
     log.info("Starting prepare phase for task: {}", syncTask.getName());
     log.info("Checking directories");
+
     if (!Files.isDirectory(syncTask.getSourcePath())) {
       throw new IllegalStateException(
           "Source directory does not exist: " + syncTask.getSourceDir());
     }
+
     if (!Files.isDirectory(syncTask.getTargetPath())) {
-      throw new IllegalStateException(
-          "Target directory does not exist: " + syncTask.getTargetDir());
+      try {
+        Files.createDirectories(syncTask.getTargetPath());
+      } catch (IOException e) {
+        throw new IllegalStateException(
+            "Target directory does not exist and could not be created: " + syncTask.getTargetDir());
+      }
     }
 
     log.info(
@@ -42,7 +48,8 @@ public class Syncer {
 
     if (syncTask.isCopyToTarget()) {
       Visitor visitor =
-          new Visitor(this, new SourceRunDelegate(syncTask, syncJob, stats, config.getIgnoreList()));
+          new Visitor(
+              this, new SourceRunDelegate(syncTask, syncJob, stats, config.getIgnoreList()));
       try {
         log.info("Scanning source tree for files to copy");
         Files.walkFileTree(syncTask.getSourcePath(), visitor);

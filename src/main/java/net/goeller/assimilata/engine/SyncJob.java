@@ -49,7 +49,7 @@ public class SyncJob {
       }
 
       if (dryRun) {
-        entry.log();
+        //entry.log();
       } else {
         entry.execute();
       }
